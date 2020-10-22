@@ -20,13 +20,21 @@ def server(port):
 
 def client(port):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    message = input('Input lowercase sentence:')
-    data = message.encode('ascii')
-    s.sendto(data, ('127.0.0.1', port))
-    print('The OS assigned the address {} to me'.format(s.getsockname()))
-    data, address = s.recvfrom(MAX_SIZE_BYTES)
-    text = data.decode('ascii')
-    print('The server {} replied with {!r}'.format(address, text))
+    hosts = []
+    while True:
+        host = input('Enter host address: ')
+        hosts.append((host, port))
+        message = input('Enter lowercase sentence: ')
+        data = message.encode('ascii')
+        s.sendto(data, (host, port))
+        print('Assigned IP address is: {}'.format(s.getsockname()))
+        data, address = s.recvfrom(MAX_SIZE_BYTES)
+        text = data.decode('ascii')
+        if address in hosts:
+            print('The server {} replied with {!r}'.format(address, text))
+            hosts.remove(address)
+        else:
+            print('message {!r} from unexpected host {}!'.format(text, address))
 
 
 if __name__ == '__main__':
